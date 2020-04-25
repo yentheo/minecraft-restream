@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spectra-restream",
+  "version": "${version}",
+  "name": "restream",
+  "description": "Get restream chat inside minecraft",
+  "authors": [
+    "Yenthe Oerlemans"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/spectra-restream/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "one.spectra.minecraft.restream.RestreamMod"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  }
+}
