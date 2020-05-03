@@ -10,7 +10,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import one.spectra.minecraft.restream.OnChatMessageHandler;
 import one.spectra.minecraft.restream.OnConnectHandler;
@@ -109,13 +111,14 @@ public class RestreamClient {
                         if (eventSourceId == 2) { // twitch
                             JsonObject authorJson = eventPayloadJson.get("author").getAsJsonObject();
                             String displayName = authorJson.get("displayName").getAsString();
-                            String color = null;
+                            int color = 16777215;
                             if (!authorJson.get("color").isJsonNull()) {
-                                color = authorJson.get("color").getAsString();
-                            }
-                            Formatting formatting = getFormatting(color);
+                                color = hexColorToInt(authorJson.get("color").getAsString());
+                            };
                             String text = eventPayloadJson.get("text").getAsString();
-                            Text authorText = new LiteralText(displayName).formatted(formatting);
+                            LiteralText authorText = new LiteralText(displayName);
+                            Style authorStyle = authorText.getStyle().withColor(TextColor.fromRgb(color));
+                            authorText.setStyle(authorStyle);
                             Text messageText = new LiteralText(text).formatted(Formatting.WHITE);
                             handler.op(authorText, messageText, Platform.TWITCH);
                         } else if (eventSourceId == 13) { // youtube
@@ -133,6 +136,10 @@ public class RestreamClient {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    private int hexColorToInt(String hexColor) {
+        return Integer.parseInt(hexColor.substring(1, 7), 16);
     }
 
     private Formatting getFormatting(String hexColor) {
