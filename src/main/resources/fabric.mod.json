@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "spectra-restream",
   "version": "${version}",
-  "name": "restream",
-  "description": "Get restream chat inside minecraft",
+  "name": "spectra-restream",
+  "description": "Mod for showing chat from stream platforms inside of Minecraft",
   "authors": [
     "Yenthe Oerlemans"
   ],

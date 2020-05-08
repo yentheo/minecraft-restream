@@ -3,7 +3,7 @@ package one.spectra.minecraft.restream;
 import net.fabricmc.api.ModInitializer;
 import one.spectra.minecraft.restream.configuration.*;
 import one.spectra.minecraft.restream.restream.*;
-import net.fabricmc.fabric.api.registry.CommandRegistry;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
 
@@ -20,7 +20,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class RestreamMod implements ModInitializer {
+    public static Logger LOGGER = LogManager.getLogger();
+
+    public static final String MOD_ID = "spectra-restream";
+    public static final String MOD_NAME = "spectra-restream";
     ConfigurationManager configurationManager = new ConfigurationManager();
     RestreamClient restreamClient = new RestreamClient(configurationManager);
 
@@ -34,7 +41,10 @@ public class RestreamMod implements ModInitializer {
         platformFormatting.put(Platform.YOUTUBE, Formatting.DARK_RED);
         platformFormatting.put(Platform.UNKNOWN, Formatting.WHITE);
 
-        CommandRegistry.INSTANCE.register(false, dispatcher -> {
+        LOGGER.info("Initialize Restream Mod");
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            LOGGER.info("Callback command registration");
             dispatcher.register(literal("setrestreamcredentials")
                     .then(argument("client_id", string()).then(argument("client_secret", string()).executes(context -> {
                         String clientId = StringArgumentType.getString(context, "client_id");
@@ -66,8 +76,8 @@ public class RestreamMod implements ModInitializer {
                         }, (author, message, platform) -> {
                             Text host = new LiteralText("(" + name.substring(0, 1).toLowerCase() + ")")
                                     .formatted(platformFormatting.get(platform));
-                            Text text = author.append(host).append(new LiteralText(": ").formatted(Formatting.WHITE))
-                                    .append(message);
+                            Text text = new LiteralText("").append(author).append(host)
+                                    .append(new LiteralText(": ").formatted(Formatting.WHITE)).append(message);
                             ctx.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text, true);
                         }, () -> {
                             connectedNames.remove(name);
@@ -105,8 +115,8 @@ public class RestreamMod implements ModInitializer {
                             System.out.print("message parsed");
                             Text host = new LiteralText(" (" + name.substring(0, 1).toLowerCase() + ")")
                                     .formatted(platformFormatting.get(platform));
-                            Text text = author.append(host).append(new LiteralText(": ").formatted(Formatting.WHITE))
-                                    .append(message);
+                            Text text = new LiteralText("").append(author).append(host)
+                                    .append(new LiteralText(": ").formatted(Formatting.WHITE)).append(message);
                             ctx.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text, true);
                         }, () -> {
                             connectedNames.remove(name);
