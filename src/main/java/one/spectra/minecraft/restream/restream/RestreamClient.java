@@ -142,29 +142,6 @@ public class RestreamClient {
         return Integer.parseInt(hexColor.substring(1, 7), 16);
     }
 
-    private Formatting getFormatting(String hexColor) {
-        if (hexColor == null) {
-            return Formatting.WHITE;
-        }
-
-        int r = Integer.parseInt(hexColor.substring(1, 3), 16);
-        int g = Integer.parseInt(hexColor.substring(3, 5), 16);
-        int b = Integer.parseInt(hexColor.substring(5, 7), 16);
-
-        double lowestValue = Double.MAX_VALUE;
-        Formatting result = Formatting.WHITE;
-        for (Color color : _minecraftColors) {
-            double d = Math.pow(((color.r - r) * 0.30), 2) + Math.pow(((color.g - g) * 0.59), 2)
-                    + Math.pow(((color.b - b) * 0.11), 2);
-            if (d < lowestValue) {
-                lowestValue = d;
-                result = color.formatting;
-            }
-        }
-
-        return result;
-    }
-
     private AuthorizeResponse authorize(HashMap<String, String> parameters) {
         RestreamConfiguration configuration = _configurationManager.getConfiguration();
         HashMap<String, String> allParameters = new HashMap<String, String>(parameters);
