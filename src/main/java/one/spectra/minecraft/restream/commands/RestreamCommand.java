@@ -1,5 +1,6 @@
 package one.spectra.minecraft.restream.commands;
 
+import com.google.inject.Inject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -34,6 +35,7 @@ public class RestreamCommand {
 
     List<String> connectedNames = new ArrayList<String>();
 
+    @Inject
     public RestreamCommand(RestreamClient restreamClient, ConfigurationManager configurationManager) {
         this.restreamClient = restreamClient;
         this.configurationManager = configurationManager;

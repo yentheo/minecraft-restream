@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.inject.Inject;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
@@ -17,7 +18,6 @@ import net.minecraft.util.Formatting;
 import one.spectra.minecraft.restream.OnChatMessageHandler;
 import one.spectra.minecraft.restream.OnConnectHandler;
 import one.spectra.minecraft.restream.OnDisconnectHandler;
-import one.spectra.minecraft.restream.OnMessageHandler;
 import one.spectra.minecraft.restream.Platform;
 import one.spectra.minecraft.restream.SimpleClient;
 import one.spectra.minecraft.restream.configuration.ConfigurationManager;
@@ -48,6 +48,7 @@ public class RestreamClient {
 
     private List<Color> _minecraftColors = new ArrayList<Color>();
 
+    @Inject
     public RestreamClient(ConfigurationManager configurationManager) {
         _minecraftColors.add(new Color(170, 0, 0, Formatting.DARK_RED));
         _minecraftColors.add(new Color(255, 85, 85, Formatting.RED));

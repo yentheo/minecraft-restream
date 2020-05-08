@@ -1,5 +1,6 @@
 package one.spectra.minecraft.restream.commands;
 
+import com.google.inject.Inject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -16,6 +17,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 public class SetRestreamCredentialsCommand {
     private ConfigurationManager configurationManager;
 
+    @Inject
     public SetRestreamCredentialsCommand(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
