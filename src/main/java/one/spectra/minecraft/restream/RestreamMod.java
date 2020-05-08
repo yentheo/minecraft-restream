@@ -10,6 +10,8 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
 import net.minecraft.text.LiteralText;
@@ -28,8 +30,8 @@ public class RestreamMod implements ModInitializer {
 
     public static final String MOD_ID = "spectra-restream";
     public static final String MOD_NAME = "spectra-restream";
-    ConfigurationManager configurationManager = new ConfigurationManager();
-    RestreamClient restreamClient = new RestreamClient(configurationManager);
+    private RestreamClient restreamClient;
+    private ConfigurationManager configurationManager;
 
     List<String> connectedNames = new ArrayList<String>();
 
@@ -37,6 +39,10 @@ public class RestreamMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        Injector injector = Guice.createInjector(new IoCModule());
+        restreamClient = injector.getInstance(RestreamClient.class);
+        configurationManager = injector.getInstance(ConfigurationManager.class);
+
         platformFormatting.put(Platform.TWITCH, Formatting.DARK_PURPLE);
         platformFormatting.put(Platform.YOUTUBE, Formatting.DARK_RED);
         platformFormatting.put(Platform.UNKNOWN, Formatting.WHITE);
