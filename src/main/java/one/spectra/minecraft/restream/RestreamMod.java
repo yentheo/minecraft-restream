@@ -13,6 +13,7 @@ import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,9 +30,8 @@ public class RestreamMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Injector injector = Guice.createInjector(new IoCModule());
-        RestreamCommand restreamCommand = injector.getInstance(RestreamCommand.class);
-        SetRestreamCredentialsCommand setRestreamCredentialsCommand = injector.getInstance(SetRestreamCredentialsCommand.class);
+        RestreamCommand restreamCommand = IoCModule.INJECTOR.getInstance(RestreamCommand.class);
+        SetRestreamCredentialsCommand setRestreamCredentialsCommand = IoCModule.INJECTOR.getInstance(SetRestreamCredentialsCommand.class);
 
         LOGGER.info("Initialize Restream Mod");
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {

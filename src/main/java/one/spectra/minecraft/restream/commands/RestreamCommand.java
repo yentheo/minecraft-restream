@@ -14,6 +14,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.ClickEvent.Action;
 import net.minecraft.util.Formatting;
+import one.spectra.minecraft.restream.ConnectionManager;
 import one.spectra.minecraft.restream.Platform;
 import one.spectra.minecraft.restream.configuration.ConfigurationManager;
 import one.spectra.minecraft.restream.configuration.RestreamConfiguration;
@@ -36,29 +37,26 @@ public class RestreamCommand {
 
     private RestreamClient restreamClient;
     private ConfigurationManager configurationManager;
+    private ConnectionManager connectionManager;
 
     HashMap<Platform, Formatting> platformFormatting = new HashMap<Platform, Formatting>();
 
     List<String> connectedNames = new ArrayList<String>();
 
     @Inject
-    public RestreamCommand(RestreamClient restreamClient, ConfigurationManager configurationManager) {
+    public RestreamCommand(RestreamClient restreamClient, ConnectionManager connectionManager, ConfigurationManager configurationManager) {
         this.restreamClient = restreamClient;
+        this.connectionManager = connectionManager;
         this.configurationManager = configurationManager;
-    }
-
-    private boolean validateRestreamConfiguration() {
-        RestreamConfiguration configuration = this.configurationManager.getConfiguration();
-        return configuration.clientId != null && configuration.clientSecret != null;
     }
 
     public LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> argumentBuilder = literal("restream")
-                .then(argument("code", greedyString()).executes(context -> startRestream(context, () -> {
+                .then(argument("code", greedyString()).executes(context -> connectionManager.startRestream(context.getSource(), () -> {
                     AuthorizeResponse authorizeResponse = restreamClient
                             .authorize(StringArgumentType.getString(context, "code"));
                     return authorizeResponse;
-                }))).executes(context -> startRestream(context, () -> {
+                }))).executes(context -> connectionManager.startRestream(context.getSource(), () -> {
                     AuthorizeResponse authorizeResponse = restreamClient
                             .refreshAuthorizationFor(context.getSource().getName());
                     if (authorizeResponse == null) {
@@ -97,43 +95,4 @@ public class RestreamCommand {
                 .reduce("", (previous, current) -> previous + current);
     }
 
-    private int startRestream(CommandContext<ServerCommandSource> context,
-            AuthorizeResponseResolver authorizeResponseResolver) {
-        boolean restreamConfigurationIsValid = validateRestreamConfiguration();
-        if (!restreamConfigurationIsValid) {
-            context.getSource().sendError(new LiteralText("Restream is not configured. Missing client credentials."));
-            return 0;
-        }
-        String name = context.getSource().getName();
-        if (connectedNames.contains(name)) {
-            context.getSource().sendFeedback(new LiteralText("Already connected.").formatted(Formatting.GRAY), false);
-            return 1;
-        }
-        AuthorizeResponse authorizeResponse = authorizeResponseResolver.get();
-        if (authorizeResponse != null) {
-            if (authorizeResponse.refresh_token != null) {
-                configurationManager.saveRefreshToken(name, authorizeResponse.refresh_token);
-                context.getSource().sendFeedback(new LiteralText("Saved refresh token.").formatted(Formatting.GRAY),
-                        false);
-            }
-            if (authorizeResponse.access_token != null) {
-                restreamClient.startListen(authorizeResponse.access_token, () -> {
-                    context.getSource().sendFeedback(
-                            new LiteralText("Connected to Restream").formatted(Formatting.DARK_GREEN), false);
-                    connectedNames.add(name);
-                }, (author, message, platform) -> {
-                    System.out.print("message parsed");
-                    Text host = new LiteralText(" (" + name.substring(0, 1).toLowerCase() + ")")
-                            .formatted(platformFormatting.get(platform));
-                    Text text = new LiteralText("").append(author).append(host)
-                            .append(new LiteralText(": ").formatted(Formatting.WHITE)).append(message);
-                    context.getSource().getMinecraftServer().getPlayerManager().broadcastChatMessage(text, true);
-                }, () -> {
-                    connectedNames.remove(name);
-                });
-
-            }
-        }
-        return 1;
-    }
 }

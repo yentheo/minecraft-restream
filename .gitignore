@@ -19,3 +19,17 @@ bin/
 
 #fabric
 run/
+
+#run
+
+world
+.mixin.out
+banned-ips.json
+banned-players.json
+configuration.yaml
+eula.txt
+ops.json
+server.properties
+usercache.json
+whitelist.json
+logs
