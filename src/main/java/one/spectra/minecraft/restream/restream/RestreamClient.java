@@ -115,7 +115,7 @@ public class RestreamClient {
                             int color = 16777215;
                             if (!authorJson.get("color").isJsonNull()) {
                                 color = hexColorToInt(authorJson.get("color").getAsString());
-                            };
+                            }
                             String text = eventPayloadJson.get("text").getAsString();
                             LiteralText authorText = new LiteralText(displayName);
                             Style authorStyle = authorText.getStyle().withColor(TextColor.fromRgb(color));
