@@ -58,8 +58,11 @@ public class ConfigurationManager {
 
     public String getRefreshToken(String name) {
         RestreamConfiguration configuration = getConfiguration();
-        return configuration.refreshTokens.stream().filter(x -> x.name.equals(name)).findFirst()
-                .map(x -> x.refreshToken).orElse(null);
+        if (configuration.refreshTokens != null) {
+            return configuration.refreshTokens.stream().filter(x -> x.name.equals(name)).findFirst()
+                    .map(x -> x.refreshToken).orElse(null);
+        }
+        return null;
     }
 
     private void persistConfiguration(RestreamConfiguration configuration) {

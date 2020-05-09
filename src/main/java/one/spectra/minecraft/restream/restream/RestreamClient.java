@@ -81,12 +81,14 @@ public class RestreamClient {
     public AuthorizeResponse refreshAuthorizationFor(String name) {
         System.out.println("Authorizing with refresh token");
         String refreshToken = _configurationManager.getRefreshToken(name);
+        System.out.println("Refresh token: " + refreshToken);
         if (refreshToken != null) {
             HashMap<String, String> parameters = new HashMap<String, String>();
             parameters.put("grant_type", "refresh_token");
             parameters.put("refresh_token", refreshToken);
             return authorize(parameters);
         }
+        System.out.println("Refresh token not present for user with name " + name);
         return null;
     }
 
