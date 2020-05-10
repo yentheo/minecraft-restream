@@ -3,7 +3,6 @@ package one.spectra.minecraft.restream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -15,8 +14,9 @@ import net.minecraft.util.Formatting;
 import one.spectra.minecraft.restream.commands.AuthorizeResponseResolver;
 import one.spectra.minecraft.restream.configuration.ConfigurationManager;
 import one.spectra.minecraft.restream.configuration.RestreamConfiguration;
-import one.spectra.minecraft.restream.restream.AuthorizeResponse;
 import one.spectra.minecraft.restream.restream.RestreamClient;
+import one.spectra.minecraft.restream.restream.models.AuthorizeResponse;
+import one.spectra.minecraft.restream.restream.models.Platform;
 
 @Singleton
 public class ConnectionManager {

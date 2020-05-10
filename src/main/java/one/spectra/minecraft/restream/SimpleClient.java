@@ -6,6 +6,9 @@ import java.nio.ByteBuffer;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import one.spectra.minecraft.restream.handlers.OnConnectHandler;
+import one.spectra.minecraft.restream.handlers.OnDisconnectHandler;
+
 public class SimpleClient extends WebSocketClient {
 
     private OnConnectHandler _onConnectHandler;

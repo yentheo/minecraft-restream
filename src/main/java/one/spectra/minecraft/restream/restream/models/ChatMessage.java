@@ -1,4 +1,4 @@
-package one.spectra.minecraft.restream.restream;
+package one.spectra.minecraft.restream.restream.models;
 
 public class ChatMessage {
     public String subscription;

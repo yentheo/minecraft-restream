@@ -1,4 +1,4 @@
-package one.spectra.minecraft.restream.restream;
+package one.spectra.minecraft.restream.restream.models;
 
 public class AuthorizeResponse {
     public String access_token;

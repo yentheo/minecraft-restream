@@ -1,6 +1,4 @@
-package one.spectra.minecraft.restream.restream;
-
-import java.util.List;
+package one.spectra.minecraft.restream.restream.models;
 
 public class Payload {
 
