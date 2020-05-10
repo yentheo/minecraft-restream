@@ -1,8 +1,6 @@
 package one.spectra.minecraft.restream;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -14,6 +12,7 @@ import net.minecraft.util.Formatting;
 import one.spectra.minecraft.restream.commands.AuthorizeResponseResolver;
 import one.spectra.minecraft.restream.configuration.ConfigurationManager;
 import one.spectra.minecraft.restream.configuration.RestreamConfiguration;
+import one.spectra.minecraft.restream.handlers.DisconnectHandler;
 import one.spectra.minecraft.restream.restream.RestreamClient;
 import one.spectra.minecraft.restream.restream.models.AuthorizeResponse;
 import one.spectra.minecraft.restream.restream.models.Platform;
@@ -25,8 +24,8 @@ public class ConnectionManager {
 
     HashMap<Platform, Formatting> platformFormatting = new HashMap<Platform, Formatting>();
 
-    List<String> connectedNames = new ArrayList<String>();
-    
+    HashMap<String, DisconnectHandler> connectedNames = new HashMap<String, DisconnectHandler>();
+
     @Inject
     public ConnectionManager(RestreamClient restreamClient, ConfigurationManager configurationManager) {
         this.restreamClient = restreamClient;
@@ -37,16 +36,15 @@ public class ConnectionManager {
         RestreamConfiguration configuration = this.configurationManager.getConfiguration();
         return configuration.clientId != null && configuration.clientSecret != null;
     }
-    
-    public int startRestream(ServerCommandSource source,
-            AuthorizeResponseResolver authorizeResponseResolver) {
+
+    public int startRestream(ServerCommandSource source, AuthorizeResponseResolver authorizeResponseResolver) {
         boolean restreamConfigurationIsValid = validateRestreamConfiguration();
         if (!restreamConfigurationIsValid) {
             source.sendError(new LiteralText("Restream is not configured. Missing client credentials."));
             return 0;
         }
         String name = source.getName();
-        if (connectedNames.contains(name)) {
+        if (connectedNames.containsKey(name)) {
             source.sendFeedback(new LiteralText("Connected to Restream.").formatted(Formatting.GRAY), false);
             return 1;
         }
@@ -54,14 +52,12 @@ public class ConnectionManager {
         if (authorizeResponse != null) {
             if (authorizeResponse.refresh_token != null) {
                 configurationManager.saveRefreshToken(name, authorizeResponse.refresh_token);
-                source.sendFeedback(new LiteralText("Saved refresh token.").formatted(Formatting.GRAY),
-                        false);
             }
             if (authorizeResponse.access_token != null) {
-                restreamClient.startListen(authorizeResponse.access_token, () -> {
-                    source.sendFeedback(
-                            new LiteralText("Connected to Restream").formatted(Formatting.DARK_GREEN), false);
-                    connectedNames.add(name);
+                restreamClient.startListen(authorizeResponse.access_token, disconnectHandler -> {
+                    source.sendFeedback(new LiteralText("Connected to Restream").formatted(Formatting.DARK_GREEN),
+                            false);
+                    connectedNames.put(name, disconnectHandler);
                 }, (author, message, platform) -> {
                     System.out.print("message parsed");
                     Text host = new LiteralText(" (" + name.substring(0, 1).toLowerCase() + ")")
@@ -76,5 +72,14 @@ public class ConnectionManager {
             }
         }
         return 1;
+    }
+
+    public void stopRestream(ServerCommandSource source) {
+        String name = source.getName();
+        DisconnectHandler disconnectHandler = connectedNames.get(name);
+        if (disconnectHandler != null) {
+            disconnectHandler.disconnect();
+        }
+        connectedNames.remove(name);
     }
 }

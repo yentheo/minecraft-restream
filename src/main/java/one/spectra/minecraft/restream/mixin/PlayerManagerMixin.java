@@ -36,4 +36,9 @@ public class PlayerManagerMixin {
             return authorizeResponse;
         });
     }
+    @Inject(method = "remove", at = @At("HEAD"))
+    private void disconnectFromStream(ServerPlayerEntity player, CallbackInfo ci) {
+        ConnectionManager connectionManager = IoCModule.INJECTOR.getInstance(ConnectionManager.class);
+        connectionManager.stopRestream(player.getCommandSource());
+    }
 }

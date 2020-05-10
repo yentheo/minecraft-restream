@@ -16,7 +16,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import one.spectra.minecraft.restream.restream.handlers.OnChatMessageHandler;
-import one.spectra.minecraft.restream.handlers.OnConnectHandler;
+import one.spectra.minecraft.restream.handlers.ConnectHandler;
+import one.spectra.minecraft.restream.handlers.DisconnectHandler;
 import one.spectra.minecraft.restream.handlers.OnDisconnectHandler;
 import one.spectra.minecraft.restream.restream.models.AuthorizeResponse;
 import one.spectra.minecraft.restream.restream.models.Platform;
@@ -93,13 +94,18 @@ public class RestreamClient {
         return null;
     }
 
-    public void startListen(String accessToken, OnConnectHandler onConnectHandler, OnChatMessageHandler handler,
+    public void startListen(String accessToken, ConnectHandler onConnectHandler, OnChatMessageHandler handler,
             OnDisconnectHandler onDisconnectHandler) {
         SimpleClient client;
         try {
             client = new SimpleClient(new URI("wss://chat.api.restream.io/ws?accessToken=" + accessToken));
+            DisconnectHandler disconnectHandler = () -> {
+                if(client != null && client.isOpen()) {
+                    client.close();
+                }
+            };
             client.registerOnOpen(() -> {
-                onConnectHandler.op();
+                onConnectHandler.op(disconnectHandler);
             });
 
             client.registerOnMessage(message -> {
