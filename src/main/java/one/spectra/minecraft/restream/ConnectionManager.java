@@ -29,8 +29,6 @@ public class ConnectionManager {
     
     @Inject
     public ConnectionManager(RestreamClient restreamClient, ConfigurationManager configurationManager) {
-        System.out.println("RANDOM------------------------");
-        System.out.println(new Random().nextInt(100));
         this.restreamClient = restreamClient;
         this.configurationManager = configurationManager;
     }
