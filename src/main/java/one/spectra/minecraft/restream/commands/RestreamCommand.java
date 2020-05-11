@@ -42,7 +42,7 @@ public class RestreamCommand {
                 .executes(context -> connectionManager.startRestream(context.getSource(), () -> {
                     AuthorizeResponse authorizeResponse = restreamClient
                             .refreshAuthorizationFor(context.getSource().getName());
-                    if (authorizeResponse == null) {
+                    if (authorizeResponse == null || authorizeResponse.access_token == null) {
                         LiteralText message = new LiteralText(
                                 "Couldn't authorize, try reauthorizing with a code by visiting: ");
 

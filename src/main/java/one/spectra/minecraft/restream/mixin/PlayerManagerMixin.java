@@ -21,12 +21,13 @@ public class PlayerManagerMixin {
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
     private void connectToRestream(ClientConnection clientConnection, ServerPlayerEntity player, CallbackInfo ci) {
+        System.out.println("player logged in");
         ConnectionManager connectionManager = IoCModule.INJECTOR.getInstance(ConnectionManager.class);
         RestreamClient restreamClient = IoCModule.INJECTOR.getInstance(RestreamClient.class);
         connectionManager.startRestream(player.getCommandSource(), () -> {
             AuthorizeResponse authorizeResponse = restreamClient
                     .refreshAuthorizationFor(player.getCommandSource().getName());
-            if (authorizeResponse == null) {
+            if (authorizeResponse == null || authorizeResponse.access_token == null) {
                 LiteralText message = new LiteralText(
                         "Couldn't authorize, try reauthorizing with a code by visiting: ");
                 String url = LinkTextGenerator.generateLink();
@@ -38,6 +39,7 @@ public class PlayerManagerMixin {
     }
     @Inject(method = "remove", at = @At("HEAD"))
     private void disconnectFromStream(ServerPlayerEntity player, CallbackInfo ci) {
+        System.out.println("player logged off");
         ConnectionManager connectionManager = IoCModule.INJECTOR.getInstance(ConnectionManager.class);
         connectionManager.stopRestream(player.getCommandSource());
     }
