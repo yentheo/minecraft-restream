@@ -30,6 +30,10 @@ public class ConnectionManager {
     public ConnectionManager(RestreamClient restreamClient, ConfigurationManager configurationManager) {
         this.restreamClient = restreamClient;
         this.configurationManager = configurationManager;
+        
+        platformFormatting.put(Platform.TWITCH, Formatting.DARK_PURPLE);
+        platformFormatting.put(Platform.YOUTUBE, Formatting.DARK_RED);
+        platformFormatting.put(Platform.UNKNOWN, Formatting.WHITE);
     }
 
     private boolean validateRestreamConfiguration() {
